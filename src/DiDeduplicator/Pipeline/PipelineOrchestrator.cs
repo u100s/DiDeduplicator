@@ -107,18 +107,26 @@ public class PipelineOrchestrator
         _logger.LogInformation("Phase 2: Comparison completed");
 
         // Phase 3: Deduplication
-        _consoleUI.WriteInfo("Phase 3: Deduplicating master...");
-        _logger.LogInformation("Phase 3: Deduplication started");
-
         DeduplicationStatistics? dedupStats = null;
-        await _consoleUI.RunWithProgressAsync("Deduplicating master", 0, async progress =>
+        if (_settings.EnableMasterDeduplication)
         {
-            dedupStats = await _deduplicationService.DeduplicateMasterAsync(
-                masterDir, progress, ct);
-        });
+            _consoleUI.WriteInfo("Phase 3: Deduplicating master...");
+            _logger.LogInformation("Phase 3: Deduplication started");
 
-        _consoleUI.WriteInfo("Phase 3: Deduplication complete.");
-        _logger.LogInformation("Phase 3: Deduplication completed");
+            await _consoleUI.RunWithProgressAsync("Deduplicating master", 0, async progress =>
+            {
+                dedupStats = await _deduplicationService.DeduplicateMasterAsync(
+                    masterDir, progress, ct);
+            });
+
+            _consoleUI.WriteInfo("Phase 3: Deduplication complete.");
+            _logger.LogInformation("Phase 3: Deduplication completed");
+        }
+        else
+        {
+            _consoleUI.WriteInfo("Phase 3: Skipped (master deduplication disabled in settings).");
+            _logger.LogInformation("Phase 3: Skipped — master deduplication disabled");
+        }
 
         // Phase 4: Cleanup
         _consoleUI.WriteInfo("Phase 4: Cleaning up empty directories...");
