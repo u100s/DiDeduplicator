@@ -1,0 +1,19 @@
+## .NET
+bin/
+obj/
+
+## IDE
+.idea/
+.vs/
+*.user
+*.suo
+
+## OS
+.DS_Store
+Thumbs.db
+
+## App runtime artifacts
+*.db
+*.db-shm
+*.db-wal
+logs/
